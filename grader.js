@@ -6,24 +6,15 @@
  */
  /*
 Automatically grade files for the presence of specified HTML tags/attributes.
-Uses commander.js and cheerio. Teaches command line application development
-and basic DOM parsing.
+Uses commander.js and cheerio.
 
 References:
 
  + cheerio
    - https://github.com/MatthewMueller/cheerio
-   - http://encosia.com/cheerio-faster-windows-friendly-alternative-jsdom/
-   - http://maxogden.com/scraping-with-node.html
 
  + commander.js
    - https://github.com/visionmedia/commander.js
-   - http://tjholowaychuk.com/post/9103188408/commander-js-nodejs-command-line-interfaces-made-easy
-
- + JSON
-   - http://en.wikipedia.org/wiki/JSON
-   - https://developer.mozilla.org/en-US/docs/JSON
-   - https://developer.mozilla.org/en-US/docs/JSON#JSON_in_Firefox_2
 */
 
 var fs = require('fs');
@@ -42,22 +33,19 @@ var assertFileExists = function(infile) {
     return instr;
 };
 
-var cheerioHtml = function(html) {
-    return cheerio.load(html);
-};
-
 var loadChecks = function(checksfile) {
     return JSON.parse(fs.readFileSync(checksfile));
 };
 
 var checkHtmlFile = function(htmlfile, checksfile) {
-    checkHtml(cheerioHtml(fs.readFileSync(htmlfile)), checksfile);
+    var html = fs.readFileSync(htmlfile);
+    checkHtml(html, checksfile);
 
     return;
 };
 
-function checkHtml(jQuery, checksfile) {
-  $ = jQuery;
+function checkHtml(html, checksfile) {
+  $ =  cheerio.load(html);
   var checks = loadChecks(checksfile).sort();
   var out = {};
   for(var ii in checks) {
@@ -77,7 +65,7 @@ var checkUrl = function(url, checksfile) {
     if (result instanceof Error) {
       util.error('Error: ' + result.message);
     } else {
-      checkHtml(cheerioHtml(result), checksfile);
+      checkHtml(result, checksfile);
     }
   });
 
